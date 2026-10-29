@@ -227,6 +227,14 @@ CRenderer::SRenderFeedback CRenderer::renderLock(const CSessionLockSurface& surf
     return feedback;
 }
 
+void CRenderer::renderEmpty(const CSessionLockSurface& surf) {
+    g_pEGL->makeCurrent(surf.eglSurface);
+    glViewport(0, 0, surf.size.x, surf.size.y);
+
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
 void CRenderer::renderRect(const CBox& box, const CHyprColor& col, int rounding) {
     const auto ROUNDEDBOX = box.copy().round();
     Mat3x3     matrix     = projMatrix.projectBox(ROUNDEDBOX, HYPRUTILS_TRANSFORM_NORMAL, box.rot);

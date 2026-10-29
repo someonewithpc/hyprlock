@@ -29,6 +29,7 @@ class CRenderer {
     };
 
     SRenderFeedback renderLock(const CSessionLockSurface& surf);
+    void            renderEmpty(const CSessionLockSurface& surf);
 
     void            renderRect(const CBox& box, const CHyprColor& col, int rounding = 0);
     void            renderBorder(const CBox& box, const CGradientValueData& gradient, int thickness, int rounding = 0, float alpha = 1.0);

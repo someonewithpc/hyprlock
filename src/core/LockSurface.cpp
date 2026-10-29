@@ -138,9 +138,21 @@ void CSessionLockSurface::render() {
         return;
     }
 
-    g_pAnimationManager->tick();
-    const auto FEEDBACK = g_pRenderer->renderLock(*this);
-    frameCallback       = makeShared<CCWlCallback>(surface->sendFrame());
+    // The compositor shows its lock-missing screen on outputs without a buffer.
+    // Building the widgets can take seconds under load, and outputs configure
+    // one after another, so commit an empty frame before the first real one
+    const bool EMPTYFRAME = !committedFirstFrame;
+    committedFirstFrame   = true;
+
+    CRenderer::SRenderFeedback FEEDBACK;
+    if (EMPTYFRAME)
+        g_pRenderer->renderEmpty(*this);
+    else {
+        g_pAnimationManager->tick();
+        FEEDBACK = g_pRenderer->renderLock(*this);
+    }
+
+    frameCallback = makeShared<CCWlCallback>(surface->sendFrame());
     frameCallback->setDone([this](CCWlCallback* r, uint32_t frameTime) {
         if (g_pHyprlock->isTerminating())
             return;
@@ -163,7 +175,7 @@ void CSessionLockSurface::render() {
         return;
     }
 
-    needsFrame = FEEDBACK.needsFrame || g_pAnimationManager->shouldTickForNext();
+    needsFrame = EMPTYFRAME || FEEDBACK.needsFrame || g_pAnimationManager->shouldTickForNext();
 }
 
 void CSessionLockSurface::onCallback() {
