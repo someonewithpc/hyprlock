@@ -45,7 +45,8 @@ class CSessionLockSurface {
     SP<CCWpViewport>              viewport        = nullptr;
     SP<CCHyprlandSurfaceV1>       hyprlandSurface = nullptr;
 
-    bool                          needsFrame = false;
+    bool                          needsFrame          = false;
+    bool                          committedFirstFrame = false;
 
     uint32_t                      m_lastFrameTime = 0;
     uint32_t                      m_frames        = 0;
